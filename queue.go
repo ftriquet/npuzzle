@@ -7,6 +7,9 @@ type PriorityQueue []*state
 func (p PriorityQueue) Len() int { return len(p) }
 
 func (p PriorityQueue) Less(i, j int) bool {
+	if search == "greedy" {
+		return p[i].cost < p[j].cost
+	}
 	return p[i].heuristic < p[j].heuristic
 }
 

@@ -16,7 +16,7 @@ func (s *state) getNextStates(finalBoard board) []*state {
 	res := make([]*state, len(sts))
 	for i := range res {
 		go func(j int) {
-			cost := sts[j].getCost(Distances, finalBoard)
+			cost := sts[j].getCost(Differences, finalBoard)
 			tmp := &state{
 				sts[j],
 				0,

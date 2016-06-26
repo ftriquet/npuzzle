@@ -58,6 +58,7 @@ func contains(open, closed PriorityQueue, st *state) bool {
 func solve(b, final board) {
 	open := make(PriorityQueue, 0)
 	close := make(PriorityQueue, 0)
+	var nbStates uint = 1
 	heap.Init(&open)
 	heap.Init(&close)
 	initialState := &state{
@@ -71,17 +72,22 @@ func solve(b, final board) {
 	for len(open) > 0 {
 		st := heap.Pop(&open).(*state)
 		if final.equals(st.b) {
+			solution := 0
 			fmt.Println("==============")
 			fmt.Println("FINI")
 			fmt.Println("==============")
 			for st != nil {
+				solution++
 				printBoard(st.b, os.Stdout)
 				st = st.ancestor
 			}
+			fmt.Printf("Size of solution: %d\n", solution)
+			fmt.Printf("Total visited states: %d", nbStates)
 			break
 		} else if !contains(open, close, st) {
 			voisins := st.getNextStates(final)
 			for i := range voisins {
+				nbStates++
 				heap.Push(&open, voisins[i])
 				open.Update(voisins[i])
 			}
