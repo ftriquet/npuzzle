@@ -7,7 +7,7 @@ type state struct {
 	index     int
 	cost      uint64
 	heuristic uint64
-	ancesters []*state
+	ancestor  *state
 }
 
 func (s *state) getNextStates(finalBoard board) []*state {
@@ -22,7 +22,7 @@ func (s *state) getNextStates(finalBoard board) []*state {
 				0,
 				cost,
 				s.heuristic + cost,
-				append(s.ancesters, s),
+				s,
 			}
 			stop <- tmp
 		}(i)

@@ -1,6 +1,9 @@
 package main
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
 
 func main() {
 	/*
@@ -10,7 +13,11 @@ func main() {
 			{6, 7, 5},
 		}
 	*/
-	b, _ := parseBoard(os.Stdin)
+	b, e := parseBoard(os.Stdin)
+	if e != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", e)
+		os.Exit(1)
+	}
 	final := getFinalBoard(3)
 	solve(b, final)
 

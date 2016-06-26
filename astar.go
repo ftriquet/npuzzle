@@ -43,12 +43,12 @@ func (b board) getPermutation(i, j, x, y int) board {
 
 func contains(open, closed PriorityQueue, st *state) bool {
 	for i := range closed {
-		if st.heuristic < closed[i].heuristic && closed[i].b.equals(st.b) {
+		if st.heuristic >= closed[i].heuristic && closed[i].b.equals(st.b) {
 			return true
 		}
 	}
 	for i := range open {
-		if st.heuristic < open[i].heuristic && open[i].b.equals(st.b) {
+		if st.heuristic >= open[i].heuristic && open[i].b.equals(st.b) {
 			return true
 		}
 	}
@@ -74,12 +74,10 @@ func solve(b, final board) {
 			fmt.Println("==============")
 			fmt.Println("FINI")
 			fmt.Println("==============")
-			for i := range st.ancesters {
-				printBoard(st.ancesters[i].b, os.Stdout)
-				fmt.Println(st.ancesters[i].heuristic)
+			for st != nil {
+				printBoard(st.b, os.Stdout)
+				st = st.ancestor
 			}
-			printBoard(st.b, os.Stdout)
-			fmt.Println()
 			break
 		} else if !contains(open, close, st) {
 			voisins := st.getNextStates(final)
