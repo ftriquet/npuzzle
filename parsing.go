@@ -4,12 +4,16 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"regexp"
 	"strconv"
 	"strings"
 )
 
 func getLineFromString(line string, size, l int) ([]int, error) {
-	words := strings.Split(line, " ")
+	comment := strings.Split(line, "#")
+	line = comment[0]
+	reg := regexp.MustCompile("[ \t]+")
+	words := reg.Split(line, -1)
 	lineSize := len(words)
 	if lineSize != size {
 		return nil, fmt.Errorf("Line %d is invalid (size should be %d, %d found)", l, size, lineSize)
@@ -28,14 +32,47 @@ func getLineFromString(line string, size, l int) ([]int, error) {
 func parseBoard(in io.Reader) (b board, e error) {
 	scanner := bufio.NewScanner(in)
 	e = nil
-	var lines []string
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+	hasSize := false
+	numberRegex := regexp.MustCompile("[0-9]+")
+	var size int
+	i := 0
+	var lines []struct {
+		line       string
+		lineNumber int
 	}
-	size := len(lines)
+	for scanner.Scan() {
+		i++
+		tmp := strings.Trim(scanner.Text(), " \t")
+		if tmp[0] != '#' {
+			tmp = strings.Split(tmp, "#")[0]
+			if !hasSize {
+				if numberRegex.MatchString(tmp) {
+					hasSize = true
+					s, err := strconv.ParseInt(tmp, 10, 0)
+					if err != nil {
+						return nil, fmt.Errorf("Invalid line number: %s", tmp)
+					}
+					size = int(s)
+				} else {
+					return nil, fmt.Errorf("Size must be provided at begining of file")
+				}
+			} else {
+				lines = append(lines, struct {
+					line       string
+					lineNumber int
+				}{
+					tmp,
+					i,
+				})
+			}
+		}
+	}
+	if size != len(lines) {
+		return nil, fmt.Errorf("Wrong numbers of lines (expected: %d, found: %d", size, len(lines))
+	}
 	b = make(board, size)
 	for i := range lines {
-		b[i], e = getLineFromString(lines[i], size, i+1)
+		b[i], e = getLineFromString(lines[i].line, size, lines[i].lineNumber)
 		if e != nil {
 			return nil, e
 		}

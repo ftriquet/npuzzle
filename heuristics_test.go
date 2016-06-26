@@ -16,8 +16,8 @@ func TestHeuristics(t *testing.T) {
 		{0, 3, 8},
 		{5, 7, 6},
 	}
-	assert.Equal(t, 2, Differences(b, c))
-	assert.Equal(t, 2, Distances(b, c))
-	assert.Equal(t, 22, Differences(b, d))
-	assert.Equal(t, 12, Distances(b, d))
+	assert.Equal(t, 2, int(Differences(b, c)))
+	assert.Equal(t, 2, int(Distances(b, c)))
+	assert.Equal(t, 22, int(Differences(b, d)))
+	assert.Equal(t, 12, int(Distances(b, d)))
 }

@@ -9,26 +9,32 @@ import (
 )
 
 func TestParsing(t *testing.T) {
-	b := board{
-		{0, 1, 2},
-		{3, 4, 5},
-		{6, 7, 8},
+	validMaps := []string{
+		"maps/valid_aligned.txt",
+		"maps/valid_basic.txt",
+		"maps/valid_comments.txt",
+		"maps/valid_wtf.txt",
 	}
-	f, e := os.Open("board.txt")
-	require.True(t, e == nil, "Open Error, can't test")
-	bo, e := parseBoard(f)
-	require.True(t, e == nil)
-	require.True(t, b.equals(bo))
-	f, e = os.Open("invalid_board.txt")
-	require.True(t, e == nil, "Open Error, can't test")
-	bo, e = parseBoard(f)
-	assert.True(t, e != nil)
-	f, e = os.Open("invalid_board_2.txt")
-	require.True(t, e == nil, "Open Error, can't test")
-	bo, e = parseBoard(f)
-	assert.True(t, e != nil)
-	f, e = os.Open("invalid_board_3.txt")
-	require.True(t, e == nil, "Open Error, can't test")
-	bo, e = parseBoard(f)
-	assert.True(t, e != nil)
+	invalidMaps := []string{
+		"maps/invalid_no_zero.txt",
+		"maps/invalid_line_sizes.txt",
+		"maps/invalid_wrong_size.txt",
+		"maps/invalid_non_number_size.txt",
+	}
+	for _, m := range validMaps {
+		f, err := os.Open(m)
+		require.True(t, err == nil)
+		if err != nil {
+			_, err := parseBoard(f)
+			assert.True(t, err == nil)
+		}
+	}
+	for _, m := range invalidMaps {
+		f, err := os.Open(m)
+		require.True(t, err == nil)
+		if err != nil {
+			_, err := parseBoard(f)
+			assert.True(t, err != nil)
+		}
+	}
 }
