@@ -9,6 +9,7 @@ import (
 var (
 	search    string
 	heuristic string
+	nstates   int
 )
 
 func checkFlags(heuristics []string) {

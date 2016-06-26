@@ -82,7 +82,8 @@ func solve(b, final board) {
 				st = st.ancestor
 			}
 			fmt.Printf("Size of solution: %d\n", solution)
-			fmt.Printf("Total visited states: %d", nbStates)
+			fmt.Printf("Total visited states: %d\n", nbStates)
+			fmt.Printf("Maximum number of states in memory at the same time: %d\n", nstates)
 			break
 		} else if !contains(open, close, st) {
 			voisins := st.getNextStates(final)
@@ -93,6 +94,9 @@ func solve(b, final board) {
 			}
 			heap.Push(&close, st)
 			close.Update(st)
+			if len(open) > nstates {
+				nstates = len(open)
+			}
 		}
 	}
 }
