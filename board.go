@@ -32,3 +32,24 @@ func (b board) equals(b2 board) bool {
 func (b board) getCost(h Heuristic, final board) uint64 {
 	return h(b, final)
 }
+
+func (b board) toArray() []int {
+	var r []int
+	for i := range b {
+		r = append(r, b[i]...)
+	}
+	return r
+}
+
+func (b board) nbInversions() int {
+	t := b.toArray()
+	count := 0
+	for i, v := range t {
+		for _, w := range t[i+1:] {
+			if v > w {
+				count++
+			}
+		}
+	}
+	return count
+}

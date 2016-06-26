@@ -42,6 +42,17 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", e)
 		os.Exit(1)
 	}
-	final := getFinalBoard(3)
+	final := getFinalBoard(len(b))
+	invB := b.nbInversions()
+	invF := final.nbInversions()
+	if len(b)%2 == 0 {
+		x, _ := b.getPos(0)
+		invB += x
+		invF += x
+	}
+	if !(invB%2 == invF%2) {
+		fmt.Println("Puzzle non solvable")
+		os.Exit(1)
+	}
 	solve(b, final)
 }
