@@ -71,6 +71,7 @@ func solve(b, final board) {
 	heap.Push(&open, initialState)
 	for len(open) > 0 {
 		st := heap.Pop(&open).(*state)
+		printBoard(st.b, os.Stdout)
 		if final.equals(st.b) {
 			solution := 0
 			fmt.Println("==============")
