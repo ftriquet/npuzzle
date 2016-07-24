@@ -55,10 +55,27 @@ func contains(open, closed PriorityQueue, st *state) bool {
 	return false
 }
 
-func solve(b, final board) {
+func contains2(open, close *queue, st *state) bool {
+	if open.data[st.cost] != nil {
+		for _, state := range open.data[st.cost] {
+			if state.b.equals(st.b) {
+				return true
+			}
+		}
+	}
+	if close.data[st.cost] != nil {
+		for _, state := range close.data[st.cost] {
+			if state.b.equals(st.b) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func solvePuzzle(b, final board) {
 	open := make(PriorityQueue, 0)
 	close := make(PriorityQueue, 0)
-	var nbStates uint = 1
 	heap.Init(&open)
 	heap.Init(&close)
 	initialState := &state{
@@ -69,35 +86,91 @@ func solve(b, final board) {
 		nil,
 	}
 	heap.Push(&open, initialState)
+	fmt.Println("Initial:")
+	printBoard(b, os.Stdout)
+	fmt.Println("Final:")
+	printBoard(final, os.Stdout)
 	for len(open) > 0 {
 		st := heap.Pop(&open).(*state)
-		printBoard(st.b, os.Stdout)
 		if final.equals(st.b) {
-			solution := 0
-			fmt.Println("==============")
 			fmt.Println("FINI")
-			fmt.Println("==============")
+			solution := 0
 			for st != nil {
 				solution++
-				printBoard(st.b, os.Stdout)
+				defer func(st *state) {
+					printBoard(st.b, os.Stdout)
+				}(st)
 				st = st.ancestor
 			}
 			fmt.Printf("Size of solution: %d\n", solution)
-			fmt.Printf("Total visited states: %d\n", nbStates)
-			fmt.Printf("Maximum number of states in memory at the same time: %d\n", nstates)
 			break
-		} else if !contains(open, close, st) {
-			voisins := st.getNextStates(final)
+		} else {
+			voisins := st.getNextStates(&final)
 			for i := range voisins {
-				nbStates++
-				heap.Push(&open, voisins[i])
-				open.Update(voisins[i])
+				if !contains(open, close, voisins[i]) {
+					heap.Push(&open, voisins[i])
+					open.Update(voisins[i])
+					/* fmt.Println("State not in opened or closed") */
+				} else {
+					/* fmt.Println("State already in opened or closed") */
+					/* printBoard(voisins[i].b, os.Stdout) */
+				}
 			}
 			heap.Push(&close, st)
 			close.Update(st)
-			if len(open) > nstates {
-				nstates = len(open)
+		}
+	}
+}
+
+func solvePuzzle2(b, final board) {
+	open := &queue{
+		make(map[uint64][]*state),
+		nil,
+	}
+	close := &queue{
+		make(map[uint64][]*state),
+		nil,
+	}
+	initialState := &state{
+		b,
+		0,
+		0,
+		0,
+		nil,
+	}
+	open.Push(initialState)
+	fmt.Println("Initial:")
+	printBoard(b, os.Stdout)
+	fmt.Println("Final:")
+	printBoard(final, os.Stdout)
+	/* fmt.Println(open) */
+	/* fmt.Println(open.costs) */
+	for len(open.costs) > 0 {
+		st := open.Pop()
+		if final.equals(st.b) {
+			fmt.Println("FINI")
+			solution := 0
+			for st != nil {
+				solution++
+				defer func(st *state) {
+					printBoard(st.b, os.Stdout)
+				}(st)
+				st = st.ancestor
 			}
+			fmt.Printf("Size of solution: %d\n", solution)
+			break
+		} else {
+			voisins := st.getNextStates(&final)
+			for i := range voisins {
+				if !contains2(open, close, voisins[i]) {
+					open.Push(voisins[i])
+					/* fmt.Println("State not in opened or closed") */
+				} else {
+					/* fmt.Println("State already in opened or closed") */
+					/* printBoard(voisins[i].b, os.Stdout) */
+				}
+			}
+			close.Push(st)
 		}
 	}
 }

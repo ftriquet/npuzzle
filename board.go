@@ -19,6 +19,7 @@ func (b board) size() int {
 }
 
 func (b board) equals(b2 board) bool {
+	/* return Distances(b, b2) == 0 */
 	for i := range b {
 		for j := range b[i] {
 			if b[i][j] != b2[i][j] {
@@ -39,6 +40,14 @@ func (b board) toArray() []int {
 		r = append(r, b[i]...)
 	}
 	return r
+}
+
+func boardFromArray(b []int, size int) board {
+	board := make(board, size)
+	for i := range board {
+		board[i] = b[size*i : size*(i+1)]
+	}
+	return board
 }
 
 func (b board) nbInversions() int {

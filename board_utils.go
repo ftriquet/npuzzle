@@ -28,7 +28,7 @@ func fillBoard(b board, size, first int) {
 		b[0][0] = first
 		b[0][1] = first + 1
 		b[1][0] = 0
-		b[1][1] = first + 3
+		b[1][1] = first + 2
 		return
 	}
 	count, i, j := 0, 0, 0

@@ -1,7 +1,5 @@
 package main
 
-type queue map[uint64][]*state
-
 type state struct {
 	b         board
 	index     int
@@ -10,13 +8,14 @@ type state struct {
 	ancestor  *state
 }
 
-func (s *state) getNextStates(finalBoard board) []*state {
+func (s *state) getNextStates(finalBoard *board) []*state {
 	sts := s.b.getNextStates()
 	stop := make(chan *state)
 	res := make([]*state, len(sts))
 	for i := range res {
 		go func(j int) {
-			cost := sts[j].getCost(Differences, finalBoard)
+			cost := sts[j].getCost(Differences, *finalBoard)
+			cost += sts[j].getCost(Distances, *finalBoard)
 			tmp := &state{
 				sts[j],
 				0,
