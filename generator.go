@@ -38,7 +38,6 @@ func swapEmpty(board []int, size int) {
 }
 
 func generateBoard(size int, solvable bool, iterations int) board {
-	final := getFinalBoard(size)
 	b := getFinalBoard(size).toArray()
 
 	for i := 0; i < iterations; i++ {
@@ -53,7 +52,7 @@ func generateBoard(size int, solvable bool, iterations int) board {
 		}
 	}
 	puzzle := boardFromArray(b, size)
-	if !puzzle.IsSolvable(final) {
+	if !puzzle.Solvable() {
 		panic("FAIL")
 	}
 	return puzzle
