@@ -28,9 +28,9 @@ func (b board) IsSolvable(final board) bool {
 		invF += y / len(b)
 	}
 	if !(invB%2 == invF%2) {
-		return true
+		return false
 	}
-	return false
+	return true
 }
 
 func (b board) equals(b2 board) bool {
@@ -69,9 +69,11 @@ func (b board) nbInversions() int {
 	t := b.toArray()
 	count := 0
 	for i, v := range t {
-		for _, w := range t[i+1:] {
-			if v > w {
-				count++
+		if v != 0 {
+			for _, w := range t[i+1:] {
+				if w != 0 && v > w {
+					count++
+				}
 			}
 		}
 	}
