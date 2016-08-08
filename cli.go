@@ -118,17 +118,10 @@ func solve(cxt *cli.Context) error {
 			return cli.NewExitError(fmt.Sprintf("Error: %v", e), 1)
 		}
 	} else {
-		puzzle = generateBoard(int(puzzleSize), false, int(iterations))
+		puzzle = generateBoard(int(puzzleSize), true, int(iterations))
 	}
 	final := getFinalBoard(len(puzzle))
-	invB := puzzle.nbInversions()
-	invF := final.nbInversions()
-	if len(puzzle)%2 == 0 {
-		x, _ := puzzle.getPos(0)
-		invB += x
-		invF += x
-	}
-	if !(invB%2 == invF%2) {
+	if !puzzle.IsSolvable(final) {
 		return cli.NewExitError("Unsolvable puzzle", 1)
 	}
 	solvePuzzle2(puzzle, final)

@@ -18,6 +18,21 @@ func (b board) size() int {
 	return len(b)
 }
 
+func (b board) IsSolvable(final board) bool {
+	invB := b.nbInversions()
+	invF := final.nbInversions()
+	if len(b)%2 == 0 {
+		x, _ := b.getPos(0)
+		y, _ := final.getPos(0)
+		invB += x / len(b)
+		invF += y / len(b)
+	}
+	if !(invB%2 == invF%2) {
+		return true
+	}
+	return false
+}
+
 func (b board) equals(b2 board) bool {
 	/* return Distances(b, b2) == 0 */
 	for i := range b {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
@@ -34,12 +33,12 @@ func swapEmpty(board []int, size int) {
 		poss = append(poss, index+size)
 	}
 	i := r.Intn(len(poss))
-	fmt.Printf("%d :: %d :: %v\n", index, i, poss)
 	board[index] = board[i]
 	board[i] = 0
 }
 
 func generateBoard(size int, solvable bool, iterations int) board {
+	final := getFinalBoard(size)
 	b := getFinalBoard(size).toArray()
 
 	for i := 0; i < iterations; i++ {
@@ -53,5 +52,9 @@ func generateBoard(size int, solvable bool, iterations int) board {
 			b[0], b[1] = b[1], b[0]
 		}
 	}
-	return boardFromArray(b, size)
+	puzzle := boardFromArray(b, size)
+	if !puzzle.IsSolvable(final) {
+		panic("FAIL")
+	}
+	return puzzle
 }
