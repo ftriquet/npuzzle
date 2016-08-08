@@ -1,6 +1,10 @@
 package main
 
-import "math/rand"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
 func getIndex(num int, tab []int) int {
 	for i, v := range tab {
@@ -13,6 +17,7 @@ func getIndex(num int, tab []int) int {
 
 func swapEmpty(board []int, size int) {
 	// swap empty piece with another
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := getIndex(0, board)
 	poss := []int{}
 
@@ -28,7 +33,8 @@ func swapEmpty(board []int, size int) {
 	if index/size < size-1 {
 		poss = append(poss, index+size)
 	}
-	i := rand.Intn(len(poss))
+	i := r.Intn(len(poss))
+	fmt.Printf("%d :: %d :: %v\n", index, i, poss)
 	board[index] = board[i]
 	board[i] = 0
 }

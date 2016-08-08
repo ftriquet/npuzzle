@@ -19,6 +19,9 @@ var (
 
 func main() {
 	app := cli.NewApp()
+	app.Usage = "Solve n-puzzle game"
+	app.Name = "npuzzle"
+	app.Version = "1.0.0"
 
 	app.Commands = []cli.Command{
 		cli.Command{
