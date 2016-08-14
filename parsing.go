@@ -43,6 +43,9 @@ func parseBoard(in io.Reader) (b board, e error) {
 	for scanner.Scan() {
 		i++
 		tmp := strings.Trim(scanner.Text(), " \t")
+		if len(tmp) == 0 {
+			break
+		}
 		if tmp[0] != '#' {
 			tmp = strings.Split(tmp, "#")[0]
 			if !hasSize {
