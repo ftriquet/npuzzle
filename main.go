@@ -130,6 +130,7 @@ func solve(cxt *cli.Context) error {
 
 func generate(cxt *cli.Context) error {
 	b := generateBoard(int(puzzleSize), !unsolvable, int(iterations))
+	fmt.Println(puzzleSize)
 	printBoard(b, os.Stdout)
 	return nil
 }

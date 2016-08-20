@@ -65,7 +65,7 @@ func getBandSize(boardSize int) int {
 func printBoard(brd board, out io.Writer) {
 	for i := range brd {
 		for j := range brd[i] {
-			fmt.Fprintf(out, "%2d ", brd[i][j])
+			fmt.Fprintf(out, "%-2d ", brd[i][j])
 		}
 		fmt.Fprintf(out, "\n")
 	}

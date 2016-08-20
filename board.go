@@ -65,6 +65,15 @@ func (b board) nbInversions() int {
 	return count
 }
 
+func pos(board []int, v int) int {
+	for i, val := range board {
+		if val == v {
+			return i
+		}
+	}
+	return -1
+}
+
 func (b board) Solvable(final board) bool {
 	start := b.toArray()
 	end := final.toArray()
@@ -76,7 +85,8 @@ func (b board) Solvable(final board) bool {
 
 	for i := range start {
 		if tmpStart[i] != tmpEnd[i] {
-			tmpStart[i], tmpEnd[i] = tmpEnd[i], tmpStart[i]
+			p := pos(tmpStart, tmpEnd[i])
+			tmpStart[p], tmpStart[i] = tmpStart[i], tmpStart[p]
 			inversions++
 		}
 	}
