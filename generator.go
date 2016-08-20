@@ -52,8 +52,5 @@ func generateBoard(size int, solvable bool, iterations int) board {
 		}
 	}
 	puzzle := boardFromArray(b, size)
-	if !puzzle.Solvable() {
-		panic("FAIL")
-	}
 	return puzzle
 }

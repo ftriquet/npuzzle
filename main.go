@@ -121,7 +121,7 @@ func solve(cxt *cli.Context) error {
 		puzzle = generateBoard(int(puzzleSize), true, int(iterations))
 	}
 	final := getFinalBoard(len(puzzle))
-	if !puzzle.Solvable() {
+	if !puzzle.Solvable(final) {
 		return cli.NewExitError("Unsolvable puzzle", 1)
 	}
 	solvePuzzle2(puzzle, final)

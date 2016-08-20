@@ -65,20 +65,19 @@ func (b board) nbInversions() int {
 	return count
 }
 
-func (b board) Solvable() bool {
+func (b board) Solvable(final board) bool {
+	start := b.toArray()
+	end := final.toArray()
+	tmpStart := make([]int, len(start))
+	tmpEnd := make([]int, len(start))
+	copy(tmpStart, start)
+	copy(tmpEnd, end)
 	inversions := 0
-	t := b.toArray()
-	for i := 0; i < len(t); i++ {
-		if t[i] == 0 {
-			for j := i + 1; j < len(t); j++ {
-				if t[j] != 0 && t[j] < t[i] {
-					inversions++
-				}
-			}
-		} else {
-			if len(b)%2 == 0 {
-				inversions += (1 + i/len(b))
-			}
+
+	for i := range start {
+		if tmpStart[i] != tmpEnd[i] {
+			tmpStart[i], tmpEnd[i] = tmpEnd[i], tmpStart[i]
+			inversions++
 		}
 	}
 	return inversions%2 == 0
