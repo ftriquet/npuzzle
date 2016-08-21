@@ -1,7 +1,6 @@
 package main
 
 import (
-	"container/heap"
 	"fmt"
 	"os"
 )
@@ -41,85 +40,22 @@ func (b board) getPermutation(i, j, x, y int) board {
 	return newBoard
 }
 
-func contains(open, closed PriorityQueue, st *state) bool {
-	for i := range closed {
-		if st.heuristic >= closed[i].heuristic && closed[i].b.equals(st.b) {
-			return true
-		}
-	}
-	for i := range open {
-		if st.heuristic >= open[i].heuristic && open[i].b.equals(st.b) {
-			return true
-		}
-	}
-	return false
-}
-
 func contains2(open, close *queue, st *state) bool {
-	if open.data[st.cost] != nil {
-		for _, state := range open.data[st.cost] {
-			if state.b.equals(st.b) {
+	for _, states := range open.data {
+		for _, state := range states {
+			if state.heuristic <= st.heuristic && state.b.equals(st.b) {
 				return true
 			}
 		}
 	}
-	if close.data[st.cost] != nil {
-		for _, state := range close.data[st.cost] {
-			if state.b.equals(st.b) {
+	for _, states := range close.data {
+		for _, state := range states {
+			if state.heuristic <= st.heuristic && state.b.equals(st.b) {
 				return true
 			}
 		}
 	}
 	return false
-}
-
-func solvePuzzle(b, final board) {
-	open := make(PriorityQueue, 0)
-	close := make(PriorityQueue, 0)
-	heap.Init(&open)
-	heap.Init(&close)
-	initialState := &state{
-		b,
-		0,
-		0,
-		0,
-		nil,
-	}
-	heap.Push(&open, initialState)
-	fmt.Println("Initial:")
-	printBoard(b, os.Stdout)
-	fmt.Println("Final:")
-	printBoard(final, os.Stdout)
-	for len(open) > 0 {
-		st := heap.Pop(&open).(*state)
-		if final.equals(st.b) {
-			fmt.Println("FINI")
-			solution := 0
-			for st != nil {
-				solution++
-				defer func(st *state) {
-					printBoard(st.b, os.Stdout)
-				}(st)
-				st = st.ancestor
-			}
-			fmt.Printf("Size of solution: %d\n", solution)
-			break
-		} else {
-			voisins := st.getNextStates(&final)
-			for i := range voisins {
-				if !contains(open, close, voisins[i]) {
-					heap.Push(&open, voisins[i])
-					open.Update(voisins[i])
-					/* fmt.Println("State not in opened or closed") */
-				} else {
-					/* fmt.Println("State already in opened or closed") */
-					/* printBoard(voisins[i].b, os.Stdout) */
-				}
-			}
-			heap.Push(&close, st)
-			close.Update(st)
-		}
-	}
 }
 
 func solvePuzzle2(b, final board) {
@@ -138,36 +74,45 @@ func solvePuzzle2(b, final board) {
 		0,
 		nil,
 	}
+	if final.equals(initialState.b) {
+		fmt.Println("The puzzle is already solved")
+		return
+	}
+	nStates := 1
+	statesInOpen := 0
 	open.Push(initialState)
-	fmt.Println("Initial:")
-	printBoard(b, os.Stdout)
-	fmt.Println("Final:")
-	printBoard(final, os.Stdout)
-	/* fmt.Println(open) */
-	/* fmt.Println(open.costs) */
 	for len(open.costs) > 0 {
+		tmp := 0
+		for k := range open.data {
+			tmp += len(open.data[k])
+		}
+		if tmp > nStates {
+			nStates = tmp
+		}
 		st := open.Pop()
 		if final.equals(st.b) {
-			fmt.Println("FINI")
-			solution := 0
+			solutions := 0
+			for s := st; s != nil; s = s.ancestor {
+				solutions++
+			}
+			defer func(n, p, s int) {
+				fmt.Printf("Size of solution: %d\n", s)
+				fmt.Printf("Total number of states visited: %d\n", n)
+				fmt.Printf("Max number of states at the same time in open set: %d\n", p)
+			}(statesInOpen, nStates, solutions)
 			for st != nil {
-				solution++
 				defer func(st *state) {
 					printBoard(st.b, os.Stdout)
 				}(st)
 				st = st.ancestor
 			}
-			fmt.Printf("Size of solution: %d\n", solution)
 			break
 		} else {
 			voisins := st.getNextStates(&final)
 			for i := range voisins {
 				if !contains2(open, close, voisins[i]) {
+					statesInOpen++
 					open.Push(voisins[i])
-					/* fmt.Println("State not in opened or closed") */
-				} else {
-					/* fmt.Println("State already in opened or closed") */
-					/* printBoard(voisins[i].b, os.Stdout) */
 				}
 			}
 			close.Push(st)

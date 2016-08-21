@@ -14,13 +14,29 @@ func (s *state) getNextStates(finalBoard *board) []*state {
 	res := make([]*state, len(sts))
 	for i := range res {
 		go func(j int) {
-			cost := sts[j].getCost(Differences, *finalBoard)
-			cost += sts[j].getCost(Distances, *finalBoard)
+			heuristick := uint64(0)
+			switch heuristic {
+			case "manhattan":
+				heuristick = sts[j].getCost(manhattanDistance, *finalBoard)
+			case "euclidian":
+				heuristick = sts[j].getCost(difference, *finalBoard)
+			case "conflict":
+				heuristick = sts[j].getCost(manhattanDistance, *finalBoard) +
+					linearConflict(*finalBoard, sts[j])
+			default:
+				heuristick = sts[j].getCost(manhattanDistance, *finalBoard)
+			}
+			var newCost uint64
+			if search == "greedy" {
+				newCost = heuristick
+			} else {
+				newCost = s.heuristic + 1 + heuristick
+			}
 			tmp := &state{
 				sts[j],
 				0,
-				cost,
-				s.heuristic + cost,
+				newCost,
+				s.heuristic + 1,
 				s,
 			}
 			stop <- tmp

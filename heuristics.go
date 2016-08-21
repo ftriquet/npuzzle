@@ -9,7 +9,7 @@ func abs(i int) int {
 
 type Heuristic func(board, board) uint64
 
-func Differences(final, current board) uint64 {
+func difference(final, current board) uint64 {
 	var sum uint64
 	for i := range final {
 		for j := range final[i] {
@@ -30,7 +30,7 @@ func distance(current, final board, x, y int) uint64 {
 	return 0
 }
 
-func Distances(final, current board) uint64 {
+func manhattanDistance(final, current board) uint64 {
 	var sum uint64
 	for i := range current {
 		for j := range current[i] {
@@ -38,4 +38,29 @@ func Distances(final, current board) uint64 {
 		}
 	}
 	return sum
+}
+
+func conflict(b board, line, i, k int) bool {
+	ivalue := b[line][i]
+	kvalue := b[line][k]
+	ix, iy := b.getPos(ivalue)
+	kx, ky := b.getPos(kvalue)
+	if ix == kx && iy > ky {
+		return true
+	}
+	return false
+}
+
+func linearConflict(final, current board) uint64 {
+	res := uint64(0)
+	for j := 0; j < len(current); j++ {
+		for i := 0; i < len(current)-1; i++ {
+			for k := i + 1; k < len(current); k++ {
+				if conflict(current, j, i, k) {
+					res += 2
+				}
+			}
+		}
+	}
+	return res
 }
