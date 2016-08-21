@@ -1,5 +1,7 @@
 package main
 
+import "math"
+
 func abs(i int) int {
 	if i < 0 {
 		return -i
@@ -20,14 +22,19 @@ func difference(final, current board) uint64 {
 }
 
 func euclidianDistance(final, current board) uint64 {
-	res := uint64(0)
+	sum := float64(0.0)
 	for i := range current {
-		for j := range current[i] {
-
+		for j, val := range current[i] {
+			x, y := final.getPos(val)
+			dx := float64(abs(x - i))
+			dy := float64(abs(y - j))
+			sum += math.Sqrt(dx*dx + dy*dy)
 		}
 	}
+	return uint64(sum)
 }
 
+/*
 func distance(current, final board, x, y int) uint64 {
 	for i := range final {
 		for j := range final[i] {
@@ -38,12 +45,14 @@ func distance(current, final board, x, y int) uint64 {
 	}
 	return 0
 }
+*/
 
 func manhattanDistance(final, current board) uint64 {
 	var sum uint64
 	for i := range current {
-		for j := range current[i] {
-			sum += distance(current, final, i, j)
+		for j, val := range current[i] {
+			x, y := final.getPos(val)
+			sum += uint64(abs(x-i) + abs(y-j))
 		}
 	}
 	return sum

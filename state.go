@@ -19,7 +19,7 @@ func (s *state) getNextStates(finalBoard *board) []*state {
 			case "manhattan":
 				heuristick = sts[j].getCost(manhattanDistance, *finalBoard)
 			case "euclidian":
-				heuristick = sts[j].getCost(difference, *finalBoard)
+				heuristick = sts[j].getCost(euclidianDistance, *finalBoard)
 			case "conflict":
 				heuristick = sts[j].getCost(manhattanDistance, *finalBoard) + linearConflict(*finalBoard, sts[j])
 			case "all":
@@ -27,7 +27,9 @@ func (s *state) getNextStates(finalBoard *board) []*state {
 					sts[j].getCost(hammingDistance, *finalBoard) +
 					linearConflict(*finalBoard, sts[j])
 			default:
-				heuristick = sts[j].getCost(manhattanDistance, *finalBoard)
+				heuristick = sts[j].getCost(manhattanDistance, *finalBoard) +
+					sts[j].getCost(hammingDistance, *finalBoard) +
+					linearConflict(*finalBoard, sts[j])
 			}
 			var newCost uint64
 			if search == "greedy" {

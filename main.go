@@ -86,7 +86,7 @@ func main() {
 				},
 				cli.StringFlag{
 					Name:        "heuristic",
-					Value:       "manhattan",
+					Value:       "all",
 					Usage:       "Heuristic used to find the solution",
 					Destination: &heuristic,
 				},
