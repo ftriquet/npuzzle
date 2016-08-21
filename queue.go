@@ -3,9 +3,11 @@ package main
 type queue struct {
 	data  map[uint64][]*state
 	costs []uint64
+	size  int
 }
 
 func (q *queue) Push(s *state) {
+	q.size++
 	if q.data[s.cost] != nil {
 		q.data[s.cost] = append(q.data[s.cost], s)
 		return
@@ -15,6 +17,7 @@ func (q *queue) Push(s *state) {
 }
 
 func (q *queue) Pop() *state {
+	q.size--
 	mincost := q.costs[0]
 	costindex := 0
 	for i, v := range q.costs {

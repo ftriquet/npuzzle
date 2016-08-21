@@ -41,31 +41,46 @@ func (b board) getPermutation(i, j, x, y int) board {
 }
 
 func contains2(open, close *queue, st *state) bool {
-	for _, states := range open.data {
-		for _, state := range states {
-			if state.heuristic <= st.heuristic && state.b.equals(st.b) {
-				return true
+	c := make(chan bool, 2)
+	go func(s *state, op *queue, c chan bool) {
+		for cost, states := range op.data {
+			if cost < s.cost {
+				for _, state := range states {
+					if state.heuristic <= s.heuristic && state.b.equals(s.b) {
+						c <- true
+						return
+					}
+				}
 			}
 		}
-	}
-	for _, states := range close.data {
-		for _, state := range states {
-			if state.heuristic <= st.heuristic && state.b.equals(st.b) {
-				return true
+		c <- false
+	}(st, open, c)
+	go func(s *state, cl *queue, c chan bool) {
+		for cost, states := range cl.data {
+			if cost < s.cost {
+				for _, state := range states {
+					if state.heuristic <= s.heuristic && state.b.equals(s.b) {
+						c <- true
+						return
+					}
+				}
 			}
 		}
-	}
-	return false
+		c <- false
+	}(st, close, c)
+	return <-c || <-c
 }
 
 func solvePuzzle2(b, final board) {
 	open := &queue{
 		make(map[uint64][]*state),
 		nil,
+		0,
 	}
 	close := &queue{
 		make(map[uint64][]*state),
 		nil,
+		0,
 	}
 	initialState := &state{
 		b,
@@ -82,11 +97,7 @@ func solvePuzzle2(b, final board) {
 	statesInOpen := 0
 	open.Push(initialState)
 	for len(open.costs) > 0 {
-		tmp := 0
-		for k := range open.data {
-			tmp += len(open.data[k])
-		}
-		if tmp > nStates {
+		if tmp := open.size + close.size; tmp > nStates {
 			nStates = tmp
 		}
 		st := open.Pop()
@@ -98,7 +109,7 @@ func solvePuzzle2(b, final board) {
 			defer func(n, p, s int) {
 				fmt.Printf("Size of solution: %d\n", s)
 				fmt.Printf("Total number of states visited: %d\n", n)
-				fmt.Printf("Max number of states at the same time in open set: %d\n", p)
+				fmt.Printf("Max number of states at the same time in memory: %d\n", p)
 			}(statesInOpen, nStates, solutions)
 			for st != nil {
 				defer func(st *state) {
