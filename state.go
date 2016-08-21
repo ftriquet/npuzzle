@@ -35,13 +35,13 @@ func (s *state) getNextStates(finalBoard *board) []*state {
 			if search == "greedy" {
 				newCost = heuristick
 			} else {
-				newCost = s.heuristic + 1 + heuristick
+				newCost = s.cost + 1 + heuristick
 			}
 			tmp := &state{
 				sts[j],
 				0,
+				s.cost + 1,
 				newCost,
-				s.heuristic + 1,
 				s,
 			}
 			stop <- tmp

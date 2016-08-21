@@ -44,9 +44,9 @@ func contains2(open, close *queue, st *state) bool {
 	c := make(chan bool, 2)
 	go func(s *state, op *queue, ch chan bool) {
 		for cost, states := range op.data {
-			if cost < s.cost {
+			if cost < s.heuristic {
 				for _, state := range states {
-					if state.heuristic <= s.heuristic && state.b.equals(s.b) {
+					if state.b.equals(s.b) {
 						ch <- true
 						return
 					}
@@ -55,14 +55,13 @@ func contains2(open, close *queue, st *state) bool {
 		}
 		ch <- false
 	}(st, open, c)
+
 	go func(s *state, cl *queue, ch chan bool) {
-		for cost, states := range cl.data {
-			if cost < s.cost {
-				for _, state := range states {
-					if state.heuristic <= s.heuristic && state.b.equals(s.b) {
-						ch <- true
-						return
-					}
+		for _, states := range cl.data {
+			for _, state := range states {
+				if state.b.equals(s.b) {
+					ch <- true
+					return
 				}
 			}
 		}
@@ -100,11 +99,12 @@ func solvePuzzle2(b, final board) {
 	nStates := 1
 	statesInOpen := 0
 	open.Push(initialState)
-	for len(open.costs) > 0 {
+	for open.size > 0 {
 		if tmp := open.size + close.size; tmp > nStates {
 			nStates = tmp
 		}
 		st := open.Pop()
+		//fmt.Printf("Cost: %d, Heuristic: %d\n", st.cost, st.heuristic)
 		if final.equals(st.b) {
 			solutions := 0
 			for s := st; s != nil; s = s.ancestor {

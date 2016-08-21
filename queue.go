@@ -8,12 +8,12 @@ type queue struct {
 
 func (q *queue) Push(s *state) {
 	q.size++
-	if q.data[s.cost] != nil {
-		q.data[s.cost] = append(q.data[s.cost], s)
+	if q.data[s.heuristic] != nil {
+		q.data[s.heuristic] = append(q.data[s.heuristic], s)
 		return
 	}
-	q.data[s.cost] = append(q.data[s.cost], s)
-	q.costs = append(q.costs, s.cost)
+	q.data[s.heuristic] = append(q.data[s.heuristic], s)
+	q.costs = append(q.costs, s.heuristic)
 }
 
 func (q *queue) Pop() *state {
