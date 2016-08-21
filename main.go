@@ -9,7 +9,7 @@ import (
 
 var (
 	puzzleSize uint
-	unsolvable bool
+	solvable   bool
 	iterations uint
 	inputFile  string
 	random     bool
@@ -36,10 +36,10 @@ func main() {
 					Usage:       "Choose the `SIZE` of the puzzle",
 					Destination: &puzzleSize,
 				},
-				cli.BoolFlag{
-					Name:        "unsolvable, u",
-					Usage:       "Generates a unsolvable puzzle",
-					Destination: &unsolvable,
+				cli.BoolTFlag{
+					Name:        "solvable",
+					Usage:       "Generates a solvable or unsolvable puzzle",
+					Destination: &solvable,
 				},
 				cli.UintFlag{
 					Name:        "iterations, i",
@@ -132,7 +132,8 @@ func solve(cxt *cli.Context) error {
 }
 
 func generate(cxt *cli.Context) error {
-	b := generateBoard(int(puzzleSize), !unsolvable, int(iterations))
+	b := generateBoard(int(puzzleSize), solvable, int(iterations))
+
 	fmt.Println(puzzleSize)
 	printBoard(b, os.Stdout)
 	return nil

@@ -74,21 +74,25 @@ func pos(board []int, v int) int {
 	return -1
 }
 
-func (b board) Solvable(final board) bool {
-	start := b.toArray()
-	end := final.toArray()
-	tmpStart := make([]int, len(start))
-	tmpEnd := make([]int, len(start))
-	copy(tmpStart, start)
-	copy(tmpEnd, end)
-	inversions := 0
-
-	for i := range start {
-		if tmpStart[i] != tmpEnd[i] {
-			p := pos(tmpStart, tmpEnd[i])
-			tmpStart[p], tmpStart[i] = tmpStart[i], tmpStart[p]
-			inversions++
+func inversions(t []int) int {
+	res := 0
+	for i := 0; i < len(t)-1; i++ {
+		for j := i + 1; j < len(t); j++ {
+			if t[i] != 0 && t[j] != 0 && t[i] > t[j] {
+				res++
+			}
 		}
 	}
-	return inversions%2 == 0
+	return res
+}
+
+func (b board) Solvable(final board) bool {
+	startInv := inversions(b.toArray())
+	endInv := inversions(final.toArray())
+
+	if len(b)%2 == 0 {
+		startInv += getIndex(0, b.toArray()) / len(b)
+		endInv += getIndex(0, final.toArray()) / len(b)
+	}
+	return (startInv%2 == endInv%2)
 }
