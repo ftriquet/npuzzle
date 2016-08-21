@@ -19,6 +19,15 @@ func difference(final, current board) uint64 {
 	return sum
 }
 
+func euclidianDistance(final, current board) uint64 {
+	res := uint64(0)
+	for i := range current {
+		for j := range current[i] {
+
+		}
+	}
+}
+
 func distance(current, final board, x, y int) uint64 {
 	for i := range final {
 		for j := range final[i] {
@@ -38,6 +47,19 @@ func manhattanDistance(final, current board) uint64 {
 		}
 	}
 	return sum
+}
+
+func hammingDistance(final, current board) uint64 {
+	res := uint64(0)
+	for i := range current {
+		for j, val := range current[i] {
+			x, y := final.getPos(val)
+			if x != i || y != j {
+				res++
+			}
+		}
+	}
+	return res
 }
 
 func conflict(b board, line, i, k int) bool {

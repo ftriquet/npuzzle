@@ -42,33 +42,37 @@ func (b board) getPermutation(i, j, x, y int) board {
 
 func contains2(open, close *queue, st *state) bool {
 	c := make(chan bool, 2)
-	go func(s *state, op *queue, c chan bool) {
+	go func(s *state, op *queue, ch chan bool) {
 		for cost, states := range op.data {
 			if cost < s.cost {
 				for _, state := range states {
 					if state.heuristic <= s.heuristic && state.b.equals(s.b) {
-						c <- true
+						ch <- true
 						return
 					}
 				}
 			}
 		}
-		c <- false
+		ch <- false
 	}(st, open, c)
-	go func(s *state, cl *queue, c chan bool) {
+	go func(s *state, cl *queue, ch chan bool) {
 		for cost, states := range cl.data {
 			if cost < s.cost {
 				for _, state := range states {
 					if state.heuristic <= s.heuristic && state.b.equals(s.b) {
-						c <- true
+						ch <- true
 						return
 					}
 				}
 			}
 		}
-		c <- false
+		ch <- false
 	}(st, close, c)
-	return <-c || <-c
+	res := <-c
+	if res {
+		return res
+	}
+	return <-c
 }
 
 func solvePuzzle2(b, final board) {
