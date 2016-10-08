@@ -8,16 +8,18 @@ import (
 )
 
 var (
-	puzzleSize uint
-	solvable   bool
-	iterations uint
-	inputFile  string
-	random     bool
-	search     string
-	heuristic  string
+	puzzleSize   uint
+	solvable     bool
+	iterations   uint
+	inputFile    string
+	random       bool
+	search       string
+	heuristic    string
+	gblHeuristic Heuristic
 )
 
 func main() {
+	setHeuristics()
 	app := cli.NewApp()
 	app.Usage = "Solve n-puzzle game"
 	app.Name = "npuzzle"
@@ -86,7 +88,7 @@ func main() {
 				},
 				cli.StringFlag{
 					Name:        "heuristic",
-					Value:       "all",
+					Value:       "",
 					Usage:       "Heuristic used to find the solution",
 					Destination: &heuristic,
 				},
@@ -99,6 +101,11 @@ func main() {
 func solve(cxt *cli.Context) error {
 	var puzzle board
 	var e error
+	gblHeuristic, e = getHeuristic(heuristic)
+	if e != nil {
+		return cli.NewExitError(e.Error(), 1)
+	}
+
 	if search != "greedy" && search != "uniform" {
 		return cli.NewExitError("Error: Invalid value for parameter search", 1)
 	}

@@ -11,6 +11,17 @@ func abs(i int) int {
 
 type Heuristic func(board, board) uint64
 
+var heuristics map[string]Heuristic
+
+func setHeuristics() {
+	heuristics = map[string]Heuristic{
+		"euclidian": euclidianDistance,
+		"manhattan": manhattanDistance,
+		"hamming":   hammingDistance,
+		"conflict":  linearConflict,
+	}
+}
+
 func difference(final, current board) uint64 {
 	var sum uint64
 	for i := range final {
@@ -33,19 +44,6 @@ func euclidianDistance(final, current board) uint64 {
 	}
 	return uint64(sum)
 }
-
-/*
-func distance(current, final board, x, y int) uint64 {
-	for i := range final {
-		for j := range final[i] {
-			if final[i][j] == current[x][y] {
-				return uint64(abs(x-i) + abs(y-j))
-			}
-		}
-	}
-	return 0
-}
-*/
 
 func manhattanDistance(final, current board) uint64 {
 	var sum uint64
