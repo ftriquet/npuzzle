@@ -41,11 +41,38 @@ func (b board) getPermutation(i, j, x, y int) board {
 }
 
 func contains2(open, close *queue, st *state) bool {
-	c := make(chan bool, 2)
-	go func(s *state, op *queue, ch chan bool) {
+	c := make(chan bool)
+	c2 := make(chan bool)
+	stop1 := make(chan bool)
+	stop2 := make(chan bool)
+	go func(s *state, op *queue, ch chan bool, stop chan bool) {
 		for cost, states := range op.data {
 			if cost < s.heuristic {
 				for _, state := range states {
+					select {
+					case <- stop:
+						// ch <- false
+						return
+					default:
+						if state.b.equals(s.b) {
+							ch <- true
+							return
+						}
+					}
+				}
+			}
+		}
+		ch <- false
+	}(st, open, c, stop1)
+
+	go func(s *state, cl *queue, ch chan bool, stop chan bool) {
+		for _, states := range cl.data {
+			for _, state := range states {
+				select {
+				case <- stop:
+					// ch <- false
+					return
+				default:
 					if state.b.equals(s.b) {
 						ch <- true
 						return
@@ -54,24 +81,27 @@ func contains2(open, close *queue, st *state) bool {
 			}
 		}
 		ch <- false
-	}(st, open, c)
-
-	go func(s *state, cl *queue, ch chan bool) {
-		for _, states := range cl.data {
-			for _, state := range states {
-				if state.b.equals(s.b) {
-					ch <- true
-					return
-				}
+	}(st, close, c2, stop2)
+	select {
+	case res := <-c:
+		if res {
+			select {
+			case stop2 <- true:
+			case <-c2:
 			}
+			return res
 		}
-		ch <- false
-	}(st, close, c)
-	res := <-c
-	if res {
-		return res
+		return <-c2
+	case res2 := <-c2:
+		if res2 {
+			select {
+			case stop1 <- true:
+			case <- c:
+			}
+			return res2
+		}
+		return <-c
 	}
-	return <-c
 }
 
 func solvePuzzle2(b, final board) {
