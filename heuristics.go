@@ -22,16 +22,6 @@ func setHeuristics() {
 	}
 }
 
-func difference(final, current board) uint64 {
-	var sum uint64
-	for i := range final {
-		for j := range final[i] {
-			sum += uint64(abs(final[i][j] - current[i][j]))
-		}
-	}
-	return sum
-}
-
 func euclidianDistance(final, current board) uint64 {
 	sum := float64(0.0)
 	for i := range current {

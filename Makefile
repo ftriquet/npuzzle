@@ -8,6 +8,7 @@ SRC = astar.go \
 	  parsing.go \
 	  queue.go \
 	  state.go \
+	  Makefile
 
 
 
